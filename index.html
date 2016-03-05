@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+<html>
+    <head>
+        <title> Pomodoro Clock </title>
+        <style>
+
+        body{
+            width: 800px;
+            height: 800px;
+            margin: 0 auto;
+            font-family: Montserrat, sans-serif, monospace;
+            background-color: rgba(225,218,239,0.9);
+            position: relative;
+            color: rgba(0,0,0,0.75);
+        }
+        h1{
+            text-align: center;
+            margin-bottom: 5%;
+        }
+
+        .btn-row{
+            text-align: center;
+        }
+
+        .button{
+            width: 75px;
+            height: 75px;
+            background-color: rgba(249,181,38,0.8);
+            border-radius: 50%;
+            line-height: 240%;
+        }
+        .clock{
+            width: 300px;
+            height: 300px;
+            background: rgba(173,204,197,1);
+            margin: 6% auto;
+            border-radius: 50%;
+            position: relative;
+        }
+
+
+        .button{
+            background-color: rgba(249,181,38,0.8);
+            -webkit-transition: background-color color 0.25s;
+            -moz-transition: background-color .25s, color 0.25s;
+            -ms-transition: background-color .25s, color 0.25s;
+            -o-transition: background-color .25s, color 0.25s;
+            transition: background-color .25s, color 0.25s;
+        }
+
+        .button:hover{
+            background-color: rgba(249,181,38,1);
+            color: rgba(255,255,255,1);
+            -webkit-transition: background-color .25s, color 0.25s;
+            -moz-transition: background-color .25s, color 0.25s;
+            -ms-transition: background-color .25s, color 0.25s;
+            -o-transition: background-color .25s, color 0.25s;
+            transition: background-color .25s, color 0.25s;
+        }
+
+        .clock .dummy{
+            width: 50%;
+            height: 50%;
+            background-color: #17B290;  
+            position: absolute;
+        }
+
+        .clock .d1{
+            display: none;
+            border-top-left-radius: 100%
+        }
+        .clock .d2{
+            display: none;
+            top: 50%;
+            border-bottom-left-radius: 100% 
+        }
+        .clock .d3{
+            display: none; 
+            top: 50%;
+            left: 50%;
+            border-bottom-right-radius: 100%
+        }
+
+        .clock .d4{
+            display: none; 
+            left: 50%;
+            border-top-right-radius: 100%;
+            background: rgba(173,204,197,1);
+        }
+
+
+        #quarter{
+            display: none; 
+            left: 50%;
+            border-top-right-radius: 100%;
+            transform-origin: 0% 100%;
+        }
+
+        .clock .inner{
+            width: 80%;
+            height: 80%;
+            margin-left: 10%;
+            margin-top: 10%;
+            background-color: #E1DAEF;
+            border-radius: 50%;
+            position: absolute;
+            font-size: 40px;
+            line-height: 230px;
+            text-align: center;
+        }
+        .math{
+            position: absolute;
+            font-size: 50px;
+             -webkit-transition: color 0.25s;
+            -moz-transition: color 0.25s;
+            -ms-transition: color 0.25s;
+            -o-transition: color 0.25s;
+            transition: color 0.25s;
+        }
+
+        .math:hover{
+             color: rgba(247,126,28,1);
+             -webkit-transition: color 0.25s;
+            -moz-transition: color 0.25s;
+            -ms-transition: color 0.25s;
+            -o-transition: color 0.25s;
+            transition: color 0.25s;
+        }
+
+
+        .clock .plus{
+            top: 20%;
+            left: 44%;
+        }
+        .clock .minus{
+           
+            top: 60%;
+            left: 44%;
+
+        }
+
+
+        </style>
+
+    </head>
+
+    <body>
+        <h1> Pomodoro Clock</h1>
+            <div class="btn-row">
+                <span id="start" class="button fa fa-play fa-2x "> </span>
+                <span id="stop" class="button fa fa-stop fa-2x"> </span>
+                <span id="restart" class="button fa fa-rotate-left fa-2x"> </span>
+                <span id="break" class="button fa fa-coffee fa-2x" ></span>
+            </div>
+            <div class="clock">
+                <div class="dummy d1"></div>
+                <div class="dummy d2"></div>
+                <div class="dummy d3"> </div>
+                <div id="quarter" class="dummy"></div>
+                <div class="dummy d4"> </div>
+                <div class="inner" id="display"></div>
+                <div class="fa fa-plus plus math"></div>
+                <div class="fa fa-minus minus math"></div>
+            </div>
+
+            </div>
+        </div> 
+
+
+    <script 
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+    </script>
+
+    <script>
+
+
+    var main = function(){
+        var intervalID;
+        var started=false;
+        var isPM = true; //is pomodoro Timer
+        var t=0;
+
+        var date = new Date();
+        var pm=25;
+        var bm=5;
+        date.setMinutes(pm);
+        date.setSeconds(0);
+        
+        var convert = function(number){
+            var twoDigit = number >=10? number:"0"+number.toString();
+            return twoDigit;
+        };
+
+        var display = function(date){
+            var displayTime = convert(date.getMinutes()) + ":" + 
+                                convert(date.getSeconds());
+            $('#display').html(displayTime); 
+        }
+
+        display(date);
+
+        $('#start').click(function(){
+            if (!started) {
+                start(date.getMinutes());
+                toggle(false);
+                started = true;
+            }
+        });
+
+        $('#stop').click(function(){
+            stop();
+        });
+
+        $('#restart').click(function(){
+            if (isPM) restart(pm);
+            else restart (bm)
+        });
+
+        $('.plus').click(function(){
+            if (!started){
+                if (isPM){
+                    pm+=1;
+                    date.setMinutes(pm);
+                } else{
+                    bm+=1;
+                    date.setMinutes(bm)
+                }
+                display(date);
+            }
+        });
+
+        $('.minus').click(function(){
+            if(!started){
+                if (isPM){
+                    pm-=1;
+                    date.setMinutes(pm);
+                } else{
+                    bm-=1;
+                    date.setMinutes(bm)
+                }
+                display(date);
+            }
+        });
+
+        $('#break').click(function(){
+             isPM = false; 
+             restart(bm);
+        });
+
+
+        var transform = function(angle){
+             $('#quarter').css("display", "inline");
+             $('#quarter').css("-webkit-transform", "rotate("+angle+"deg");
+             $('#quarter').css("-moz-transform", "rotate("+angle+"deg");
+             $('#quarter').css("-o-transform", "rotate("+angle+"deg");
+             $('#quarter').css("transform", "rotate("+angle+"deg");
+        }
+
+        var render = function(t, minutes) {
+
+            angle = -t*360/(minutes*60);
+            a = Math.abs(angle); 
+
+            if (a < 90){
+                 $('.clock .d4').css("display", "inline");
+                transform(angle);
+            }
+            else if (a>=90 && a<180){
+                $('.clock .d1').css("display", "inline");
+                transform(angle);
+            }
+            else if (a>=180 && a<270){
+                $('.clock .d1').css("display", "inline");
+                $('.clock .d2').css("display", "inline");
+                transform(angle);
+            }
+            else if (a>=270 && a<=360){
+                $('.clock .d1').css("display", "inline");
+                $('.clock .d2').css("display", "inline");
+                $('.clock .d3').css("display", "inline");
+                $('.clock .d4').css("display", "none");
+                transform(angle);
+            }
+        }
+
+        var rollback = function(){
+            $('.clock .d1').css("display", "none");
+            $('.clock .d2').css("display", "none");
+            $('.clock .d3').css("display", "none");
+            $('.clock .d4').css("display", "inline");
+            $('#quarter').css("display", "none");
+        }
+
+        var toggle = function(show){
+            if (!show) {
+                $('.plus').hide();
+                $('.minus').hide();
+            } else{
+                $('.plus').show();
+                $('.minus').show();
+            }
+        }
+
+        var start = function(minutes){
+            intervalID = setInterval(function(){
+                t+=1;
+                date.setSeconds(date.getSeconds()-1);
+                display(date);
+                console.log(t)
+                if (t>=minutes*60) {
+                    stop();
+                    if (!isPM) {
+                        restart(pm);
+                        isPM = true;
+                    }
+                }
+                render(t, minutes);
+            },1000);
+        }
+
+        var stop = function(){
+            clearInterval(intervalID);
+            started = false;
+        };
+
+        var restart = function(mins){
+            stop();
+            t=0; 
+            rollback();
+            date.setMinutes(mins);
+            date.setSeconds(0);
+            display(date);
+            toggle(true);
+        };
+
+    };
+
+    $(document).ready(main);
+
+    </script>  
+
+    </body>
+
+
+</html>
